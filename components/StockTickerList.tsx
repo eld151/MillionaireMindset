@@ -1,4 +1,6 @@
-import yahooFinance, { Quote } from 'yahoo-finance2';
+import yahooFinance from 'yahoo-finance2';
+
+type Quote = any;
 
 export default async function StockTickerList() {
   // 1. Define the symbols you want to track
@@ -15,15 +17,20 @@ export default async function StockTickerList() {
   const quotes = await Promise.all(
     tickers.map(async (ticker) => {
       try {
-        const result: Quote = await yahooFinance.quote(ticker.symbol);
+        const result = await yahooFinance.quote(ticker.symbol, { validateResult: false }) as Quote;
+        const price = result.regularMarketPrice ?? result.priceHint;
+        const change = result.regularMarketChangePercent;
+
+        if (!price) throw new Error("No price found");
+
         return {
           ...ticker,
-          price: result.regularMarketPrice,
-          change: result.regularMarketChangePercent,
+          price: price,
+          change: change,
           isValid: true,
         };
       } catch (error) {
-        console.error(`Failed to fetch ${ticker.symbol}`, error);
+        console.error(`Failed to fetch ${ticker.symbol}:`, error);
         return { ...ticker, price: 0, change: 0, isValid: false };
       }
     })
@@ -42,10 +49,10 @@ export default async function StockTickerList() {
 
           {/* Right: Price & Indicator */}
           <div className="flex flex-col items-end">
-            <span className="font-semibold">
-              {stock.isValid ? `$${stock.price?.toFixed(2)}` : 'N/A'}
+            <span className="font-semibold text-right">
+              {stock.isValid ? `$${Number(stock.price).toLocaleString(undefined, {minimumFractionDigits: 2})}` : 'Loading...'}
             </span>
-            {stock.isValid && stock.change !== undefined && (
+            {stock.isValid && typeof stock.change === 'number' && (
               <span
                 className={`text-xs ${
                   stock.change >= 0 ? 'text-green-600' : 'text-red-600'
@@ -60,3 +67,4 @@ export default async function StockTickerList() {
     </ul>
   );
 }
+
