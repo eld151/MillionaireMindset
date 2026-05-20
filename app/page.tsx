@@ -1,5 +1,5 @@
 import StockTickerList from "@/components/StockTickerList";
-import NewsCard from "@/components/NewsCard";
+import { NewsFeed } from "@/components/news/NewsFeed";
 
 export default function Home() {
   return (
@@ -7,24 +7,9 @@ export default function Home() {
       
       {/* Center Column: News (Takes up 2 columns space on large screens) */}
       <div className="lg:col-span-2 space-y-6">
-        <h2 className="text-3xl font-bold font-handwritten">News</h2>
-        
-        {/* Main Story (Story 1) */}
-        <div className="h-64 bg-white rounded-xl shadow-md p-4 border border-gray-200">
-           <h3 className="text-xl font-bold">Story 1: Market Analysis</h3>
-           {/* Placeholder for chart */}
-           <div className="h-full flex items-center justify-center text-gray-400">
-             [Chart Graphic Placeholder]
-           </div>
-        </div>
-
-        {/* Sub Stories Row */}
-        <div className="grid grid-cols-2 gap-4">
-          <NewsCard title="Story 2" />
-          <NewsCard title="Story 3" />
-        </div>
+        <NewsFeed />
       </div>
-
+ 
       {/* Right Column: Login & Stocks */}
       <div className="space-y-6">
         {/* Auth Buttons */}
